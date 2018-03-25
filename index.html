@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>自定义二维码生成工具</title>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+	<script type="text/javascript" src="http://pro.wwei.cn/Public/js/jquery-1.7.2.min.js"></script>
+	<script src="js/colpick.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="css/colpick.css" type="text/css"/>
+	<link rel="stylesheet" href="css/mycss.css" type="text/css"/>
+	<meta name="viewport"
+    	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+
+<script>
+
+
+function AutoLoad()
+{
+	changeWindow();
+	$("body").css({
+		'background-color':"#121212",
+	})
+	$('#ipcolorIn').colpick({
+		layout:'hex',
+		submit:0,
+		colorScheme:'dark',
+		color:'#000000',
+		onChange:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).css('border-color','#'+hex);
+			if(!bySetColor) $(el).val(hex);
+		}
+	}).keyup(function(){
+		$(this).colpickSetColor(this.value);
+	});
+	$('#bgcolorIn').colpick({
+		layout:'hex',
+		submit:0,
+		colorScheme:'dark',
+		color:'#ffffff',
+		onChange:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).css('border-color','#'+hex);
+			if(!bySetColor) $(el).val(hex);
+		}
+	}).keyup(function(){
+		$(this).colpickSetColor(this.value);
+	});
+
+	$('#fgcolorIn').colpick({
+		layout:'hex',
+		submit:0,
+		colorScheme:'dark',
+		color:'#000000',
+		onChange:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).css('border-color','#'+hex);
+			if(!bySetColor) $(el).val(hex);
+		}
+	}).keyup(function(){
+		$(this).colpickSetColor(this.value);
+	});
+	$("#hoverframe").hide();
+	$("#hover").hide();
+}
+
+function changeWindow()
+{
+	var w=$(window).width();
+	var h=$(window).height();
+
+	$("p").css({
+		'font-size':w*0.04533,
+		'margin-left':w*0.01648,
+		'display':'inline',
+	})
+	$("input").css({
+		'width':w*0.250667,
+		'font-size':w*0.04533,
+		'display':'inline',
+	})
+
+	$("#ipD").css({
+		'top':w*0.018667,
+	})
+	$("#bgD").css({
+		'top':w*0.088,
+	})
+
+	$("#fgD").css({
+
+		'top':w*0.16,
+	})
+
+	$("#logoD").css({
+		'top':w*0.232,
+	})
+
+	$("#textD").css({
+		'top':w*0.41333,
+	})
+
+	$("#logoIn").css({
+		'top':w*0.07467,
+		'left':w*0.018667,
+		'width':w*0.930667,
+		'height':w*0.072,
+		'font-size':w*0.050667,
+	})
+
+	$("#textIn").css({
+		'top':w*0.08,
+		'left':w*0.018667,
+		'width':w*0.930667,
+		'height':w*0.41,
+		'font-size':w*0.050667,
+	})
+
+	$("#bt").css({
+		'top':w*0.94667,
+		'font-size':w*0.0667,
+		'left':w*0.296,
+		'border':'0px',
+		'background-color':'#212121'
+	})
+
+	$("#QRimg").css({
+		'width':w*0.6667,
+		'height':w*0.6667,
+		'top':w*1.05067,
+		'left':w*0.16,
+	})
+
+	$("#xtSelect").css({
+		'top':w*0.088,
+		'left':w*0.6667,
+		'font-size':w*0.048,
+	})
+
+	$("#hoverframe").css({
+		'width':w,
+		'height':h,
+	})
+
+	$("#hoverclose").css({
+		'top':w*0.029333,
+		'width':w*0.072,
+		'left':w*0.843333,
+	})
+	$("#hover").css({
+		'font-size':w*0.042667,
+		'top':w*0.418667,
+		'width':w,
+	})
+}
+
+var ipcolor;
+var bgcolor;
+var fgcolor;
+var logoimg;
+var text;
+var xtindex;
+
+function generateQRCode()
+{
+	ipcolor=$("#ipcolorIn").val();
+	bgcolor=$("#bgcolorIn").val();
+	fgcolor=$("#fgcolorIn").val();
+	logoimg=$("#logoIn").val();
+	text=$("#textIn").val();
+	xtindex=$("#xtSelect").val();
+	post();
+}
+function QRcallback(msg)
+{
+	if(msg.status==1)
+	{
+		var data = msg.data;
+		$("#IMG").attr("src",data.qr_filepath);
+	}
+	else
+	{
+		alert('请求出错：'+ msg.msg);
+	}
+}
+function post(){
+	/*
+	具体参数说明，请看api文档：http://pro.wwei.cn/open/api.html
+	*/
+	$.ajax({
+		type:"post",
+		url: "http://api.wwei.cn/wwei.html",
+		dataType:"jsonp",
+		data:{
+			apikey:"20170801122919",
+			data:text,
+			callback:"QRcallback",
+			pse:"png",
+			logo:logoimg,
+			bcolor:bgcolor,
+			fcolor:fgcolor,
+			icolor:ipcolor,
+			pcolor:ipcolor,
+			level:"L",
+			xt:xtindex,
+		},
+		jsonp:'QRcallback',
+		success: function(msg){
+			alert('注意：这里不会执行');
+			QRcallback(msg);
+		}
+	});
+}
+
+function hoverIn()
+{
+	$("#hoverframe").show();
+	$("#hover").show();
+}
+
+function hoverOut()
+{
+	$("#hoverframe").hide();
+	$("#hover").hide();
+}
+
+</script>
+
+<body onresize="changeWindow()" onload="AutoLoad()">
+	<div id="ipD" class="absol">
+		<p id="ipcolorP">码眼颜色:#</p>
+		<input id="ipcolorIn" type="text" id="bgcolor" value="000000"></input>
+	</div>
+
+	<div id="bgD" class="absol">
+		<p id="bgcolorP">背景颜色:#</p>
+		<input id="bgcolorIn" type="text" id="bgcolor" value="ffffff"></input>
+	</div>
+
+	<div id="fgD" class="absol">
+		<p id="fgcolorP">前景颜色:#</p>
+		<input id="fgcolorIn" type="text" id="bgcolor" value="000000"></input>
+	</div>
+
+	<div id="logoD" class="absol">
+		<p id="logoP">logo图片地址:</p>
+		<input id="logoIn" class="absol" type="text" value="http://wx2.sinaimg.cn/mw690/0062lSYPgy1fdj2d1s0s5j30j60j274v.jpg">
+	</div>
+	
+	<select id="xtSelect" class="absol"> 
+		<option value="0">◆液态</option> 
+		<option value="1" selected="true">■直角</option> 
+		<option value="2">●圆圈</option> 
+	</select> 
+
+	<div id="textD" class="absol">
+		<p id="textP">二维码内容:</p>
+		<p onclick="hoverIn()"><u>(查看具体格式)</u></p>
+		<textarea id="textIn" class="absol" type="text">Hello World!</textarea>
+	</div>
+
+	<button id="bt" class="absol" onclick="generateQRCode()">生成二维码</button>
+	
+	<div id="QRimg" class="absol">
+		<img id="IMG" src="">
+	</div>
+
+	<div id="hoverframe" style="background-color: black;opacity:0.7;z-index: 99;position: fixed;"></div>
+	<div id="hover">
+		<div id="hoverclose" class="absol" onclick="hoverOut()"><img src="close.png"></div>
+		<div>
+		<p><b><span style="color: #3a87ad;">二维码格式</span></b></p>
+		<p></p>
+		<table class="table">
+			<thead>
+				<tr>
+					<th width="100">类型</th>
+					<th>说明</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>文本</td>
+					<td>直接生成，无需处理</td>
+				</tr>
+				<tr>
+					<td>网址</td>
+					<td>直接生成，无需处理</td>
+				</tr>
+				<tr>
+					<td>名片</td>
+					<td>MECARD:<br/>N:小明;TEL:13723456789;<br/>EMAIL:payonesmile@qq.com;<br/>ADR:广州天河区;ORG:xx有限公司;<br/>URL:http://pro.wwei.cn/;<br/>NOTE:QQ：13783821;</td>
+				</tr>
+				<tr>
+					<td>电话</td>
+					<td>tel:13723456789</td>
+				</tr>
+				<tr>
+					<td>邮箱</td>
+					<td>mailto:payonesmile@qq.com</td>
+				</tr>
+				<tr>
+					<td>短信</td>
+					<td>smsto:13723456789:短信内容</td>
+				</tr>
+				<tr>
+					<td>无线网络</td>
+					<td>WIFI:S:CMCC;P:123456;T:WPA/WPA2;</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</body>
+</html>
